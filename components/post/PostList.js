@@ -4,9 +4,7 @@ import { useSelector } from 'react-redux';
 import { selectUsers } from '../../redux/slice/user/userSlice';
 import ReactionButtons from './ReactionButtons';
 
-export default function PostList({ posts }) {
-  const users = useSelector(selectUsers);
-
+export default function PostList({ posts, users }) {
   const getUserNameById = (userId) => {
     const user = users.find((user) => user.id == userId);
 
@@ -28,14 +26,14 @@ export default function PostList({ posts }) {
         {posts.map((post) => (
           <article key={post.id} className="border border-white rounded p-4">
             <h3 className="text-3xl">{post.title}</h3>
-            <p className="mb-2">{post.content.substring(0, 100)}</p>
+            <p className="mb-2">{post.body.substring(0, 100)}</p>
             <p className="text-sm opacity-80">
-              by {getUserNameById(post.userId)}{' '}
+              by {getUserNameById(post.userId)}
               <span className="ml-2 italic">
                 {converDateToTimeAgo(post.date)}
               </span>
             </p>
-            <div>
+            <div className="flex justify-end">
               <ReactionButtons post={post} />
             </div>
           </article>

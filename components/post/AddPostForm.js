@@ -1,31 +1,39 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { addPost } from '../../redux/slice/post/postSlice';
-import { selectUsers } from '../../redux/slice/user/userSlice';
+import { addNewPost } from '../../redux/slice/post/postSlice';
 
-export default function AddPost() {
+export default function AddPost({ users }) {
   const dispatch = useDispatch();
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [userId, setUserId] = useState('');
+  const [addingPostRequestStatus, setAddingPostRequestStatus] =
+    useState('idle');
 
-  const users = useSelector(selectUsers);
+  const isValid =
+    [title, content, userId].every(Boolean) &&
+    addingPostRequestStatus === 'idle';
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (title && content) {
-      dispatch(addPost(title, content, userId));
+    if (isValid) {
+      try {
+        setAddingPostRequestStatus('pending');
+        dispatch(addNewPost({ title, body: content, userId })).unwrap();
 
-      setTitle('');
-      setContent('');
-      setUserId('');
+        setTitle('');
+        setContent('');
+        setUserId('');
+      } catch (err) {
+        console.log('err => ', err);
+      } finally {
+        setAddingPostRequestStatus('idle');
+      }
     }
   };
-
-  const isValid = Boolean(title) && Boolean(content) && Boolean(userId);
 
   const usersOptions = users.map((user) => (
     <option key={user.id} value={user.id}>
